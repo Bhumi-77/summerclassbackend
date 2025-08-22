@@ -1,0 +1,51 @@
+const mongoose = require('mongoose');
+
+var express = require('express');
+var path = require('path');
+var cookieParser = require('cookie-parser');
+var logger = require('morgan');
+var cors = require("cors");
+
+var indexRouter = require('./routes/index');
+var usersRouter = require('./routes/userroutes');
+var professorRouter = require('./routes/professor');
+var adminRoutes = require("./routes/adminRoutes");
+var questionRoutes = require("./routes/questionRoutes")
+
+
+
+var app = express();
+app.use(cors());
+
+
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+app.use('/professor', professorRouter);
+app.use('/api/admin',adminRoutes);
+app.use('/api/questions', questionRoutes);
+
+ 
+// getting-started.js
+
+
+main().catch((err) => console.log(err));
+
+async function main() {
+  await mongoose
+        .connect(process.env.MONGO_URI,
+            {dbName:"professor_database",}
+        ).then((data) => {
+            console.log("Connected to MongoDB successfully", data.connection.name);
+          });
+  
+
+  // use `await mongoose.connect('mongodb://user:password@127.0.0.1:27017/test');` if your database has auth enabled
+}
+
+module.exports = app;
